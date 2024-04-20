@@ -1,22 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+interface FormData {
+    name: string;
+    email: string;
+    number: string;
+    message: string;
+}
 
+// use zod resolver to validate form
 const formSchema = z.object({
     name: z.string().min(3, {
         message: "name must be at least 2 characters.",
@@ -34,101 +29,65 @@ const formSchema = z.object({
 });
 
 export default function Home() {
-    const form = useForm<z.infer<typeof formSchema>>({
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm<FormData>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            number: "",
-            message: "",
-        },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
-    }
+    const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
 
     return (
         <main className='flex min-h-screen flex-col items-center justify-between p-24'>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className='space-y-8 w-full lg:w-1/2 '>
-                    <FormField
-                        control={form.control}
-                        name='name'
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder='John'
-                                        {...field}
-                                        className='border-slate-400'
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+            {/* form */}
+            <form
+                className='flex flex-col gap-4'
+                onSubmit={handleSubmit(onSubmit)}>
+                {/* name */}
+                <input
+                    type='text'
+                    placeholder='name'
+                    {...register("name")}
+                    className='p-2 border border-gray-200 rounded-md'
+                />
+                {errors.name && <p>{errors.name.message}</p>}
 
-                    <FormField
-                        control={form.control}
-                        name='email'
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder='john@gmail.com'
-                                        {...field}
-                                        className='border-slate-400'
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                {/* email */}
+                <input
+                    type='email'
+                    placeholder='email'
+                    {...register("email")}
+                    className='p-2 border border-gray-200 rounded-md'
+                />
+                {errors.email && <p>{errors.email.message}</p>}
 
-                    <FormField
-                        control={form.control}
-                        name='number'
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Number</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type='text'
-                                        {...field}
-                                        className='border-slate-400'
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                {/* number */}
+                <input
+                    type='text'
+                    placeholder='number'
+                    {...register("number")}
+                    className='p-2 border border-gray-200 rounded-md'
+                />
+                {errors.number && <p>{errors.number.message}</p>}
 
-                    <FormField
-                        control={form.control}
-                        name='message'
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Message</FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                        placeholder='message here'
-                                        {...field}
-                                        className='border-slate-400'
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                {/* message */}
+                <textarea
+                    placeholder='message'
+                    {...register("message")}
+                    className='p-2 border border-gray-200 rounded-md'
+                />
+                {errors.message && <p>{errors.message.message}</p>}
 
-                    <Button type='submit'>Submit</Button>
-                </form>
-            </Form>
+                {/* submit */}
+                <button
+                    type='submit'
+                    className='p-2 bg-blue-500 text-white rounded-md'>
+                    submit
+                </button>
+            </form>
         </main>
     );
 }
